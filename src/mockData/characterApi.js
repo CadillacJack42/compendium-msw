@@ -1,4 +1,4 @@
-module.exports = [
+export const results = [
   {
     id: 1,
     name: 'Rick Sanchez',
