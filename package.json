@@ -60,6 +60,7 @@
     "postcss-nested": "^5.0.6",
     "prettier": "^2.6.2",
     "prop-types": "^15.8.1",
+    "react-select-event": "^5.5.0",
     "style-loader": "^3.3.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.72.0",
