@@ -47,7 +47,6 @@ function ListView() {
   const pageForward = () => {
     setPage(page + 1);
   };
-
   return (
     <>
       <label htmlFor="filter">Sort Characters by: </label>

@@ -1,5 +1,6 @@
 const characterData = require('./mockData/characterApi');
-import { findByText, render, screen } from '@testing-library/react';
+const pageTwo = require('./mockData/pageTwo');
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { setupServer } from 'msw/node';
@@ -35,20 +36,48 @@ describe('Should mock Character Data from Rick and Morty Api using msw', () => {
     await screen.findByText(/rick sanchez/i);
   });
 
-  it('Should navigate through pages by clicking proved buttons', async () => {
+  it('Should navigate through pages by clicking provided buttons', async () => {
+    server.use(
+      rest.get(
+        'https://rickandmortyapi.com/api/characters/2',
+        (req, res, ctx) => {
+          return res(ctx.json(pageTwo));
+        }
+      )
+    );
+
     render(
-      <MemoryRouter initialEntries={['characters/2']}>
+      <MemoryRouter initialEntries={['/characters/2']}>
         <App />
       </MemoryRouter>
     );
+
     await screen.findByText(/cadillac jack/i);
-    screen.debug();
 
-    const nextPage = await screen.findByText('<');
+    const nextPage = await screen.findByText('>');
     userEvent.click(nextPage);
+    waitFor(() => {
+      screen.getByText(/aqua morty/i);
+      screen.getByText(/Beth's Mytholog/i);
+    });
+  });
 
-    // await screen.findByText(/loading.../i);
+  it('Should filter characters by dropdown selection', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
-    await screen.findByText(/morty smith/i);
+    screen.findByText(/loding/i);
+
+    const rick = await screen.findByText(/rick sanchez/i);
+
+    const dropdown = screen.getByLabelText('Sort Characters by:');
+    const dropdownOptions = screen.getAllByRole('option');
+    userEvent.selectOptions(dropdown, 'Alien');
+    waitFor(() => {
+      expect(screen.getByText(/rick sanchez/i)).not.toBeInTheDocument();
+    });
   });
 });
